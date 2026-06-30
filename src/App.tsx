@@ -7,6 +7,9 @@ const API_URL =
 
 function App() {
   const [items, setItems] = useState<Item[]>([]);
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [quantity, setQuantity] = useState("");
 
   async function fetchItems() {
     const response = await fetch(`${API_URL}/items`);
@@ -27,10 +30,61 @@ function App() {
     fetchItems();
   }, []);
 
+  async function handleAddItem(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    await fetch(`${API_URL}/items`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        name,
+        description,
+        quantity: Number(quantity),
+      }),
+    });
+
+    setName("");
+    setDescription("");
+    setQuantity("");
+
+    await fetchItems();
+  }
+
   return (
     <main>
       <h1>Inventory Manager</h1>
       <p>Track your inventory items</p>
+
+      <form onSubmit={handleAddItem}>
+        <label>
+          Name
+          <input
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+          />
+        </label>
+
+        <label>
+          Quantity
+          <input
+            type="number"
+            value={quantity}
+            onChange={(event) => setQuantity(event.target.value)}
+          />
+        </label>
+
+        <label>
+          Description
+          <input
+            value={description}
+            onChange={(event) => setDescription(event.target.value)}
+          />
+        </label>
+
+        <button type="submit">Add Item</button>
+      </form>
 
       <section>
         <h2>Items</h2>
