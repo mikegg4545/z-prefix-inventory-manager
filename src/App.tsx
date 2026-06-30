@@ -5,6 +5,14 @@ import type { Item } from "./types/item";
 const API_URL =
   import.meta.env.VITE_API_URL ?? "https://z-prefix-inventory-api.onrender.com";
 
+function getPreviewDescription(description: string) {
+  if (description.length <= 100) {
+    return description;
+  }
+
+  return `${description.slice(0, 100)}...`;
+}
+
 function App() {
   const [items, setItems] = useState<Item[]>([]);
   const [name, setName] = useState("");
@@ -53,11 +61,13 @@ function App() {
   }
 
   return (
-    <main>
-      <h1>Inventory Manager</h1>
-      <p>Track your inventory items</p>
+    <main className="app">
+      <header className="app-header">
+        <h1>Inventory Manager</h1>
+        <p>Track your inventory items</p>
+      </header>
 
-      <form onSubmit={handleAddItem}>
+      <form className="item-form" onSubmit={handleAddItem}>
         <label>
           Name
           <input
@@ -86,22 +96,24 @@ function App() {
         <button type="submit">Add Item</button>
       </form>
 
-      <section>
+      <section className="items-section">
         <h2>Items</h2>
 
         {items.length === 0 ? (
           <p>No inventory items yet.</p>
         ) : (
-          items.map((item) => (
-            <article key={item.id}>
-              <h3>{item.name}</h3>
-              <p>Quantity: {item.quantity}</p>
-              <p>{item.description}</p>
-              <button type="button" onClick={() => handleDeleteItem(item.id)}>
-                Delete
-              </button>
-            </article>
-          ))
+          <div className="item-list">
+            {items.map((item) => (
+              <article className="item-card" key={item.id}>
+                <h3>{item.name}</h3>
+                <p>Quantity: {item.quantity}</p>
+                <p>{getPreviewDescription(item.description)}</p>
+                <button type="button" onClick={() => handleDeleteItem(item.id)}>
+                  Delete
+                </button>
+              </article>
+            ))}
+          </div>
         )}
       </section>
     </main>
